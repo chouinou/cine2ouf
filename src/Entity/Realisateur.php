@@ -25,6 +25,7 @@ class Realisateur
      * @var Collection<int, Film>
      */
     #[ORM\OneToMany(targetEntity: Film::class, mappedBy: 'realisateur')]
+    #[ORM\OrderBy(['annee_sortie' => 'DESC'])]
     private Collection $films;
 
     public function __construct()
@@ -89,5 +90,16 @@ class Realisateur
         }
 
         return $this;
+    }
+
+        // "Christopher Nolan" → "CN", "Bong Joon-ho" → "BJ"
+    public function getInitiales(): string
+    {
+        $initiales = '';
+        foreach (explode(' ', $this->nom) as $mot) {
+            $initiales = $initiales . mb_substr($mot, 0, 1);
+        }
+
+        return mb_strtoupper(mb_substr($initiales, 0, 2));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Film;
 use App\Entity\Seance;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,18 @@ class SeanceRepository extends ServiceEntityRepository
         parent::__construct($registry, Seance::class);
     }
 
-//    /**
-//     * @return Seance[] Returns an array of Seance objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Seance
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /** Les séances à venir d'un film, avec leur salle, de la plus proche à la plus lointaine */
+    public function findProchainesPourFilm(Film $film): array
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.salle', 'sa')
+            ->addSelect('sa')
+            ->where('s.film = :film')
+            ->andWhere('s.date_heur >= :maintenant')
+            ->setParameter('film', $film)
+            ->setParameter('maintenant', new \DateTimeImmutable())
+            ->orderBy('s.date_heur', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

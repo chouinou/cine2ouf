@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ film.titre }} — Cine2ouf{% endblock %}
+
+{% block body %}
+
+    <nav class="fil-ariane">
+        <a href="{{ path('app_films') }}">Films</a>
+        <span>›</span>
+        <span class="fil-actuel">{{ film.titre }}</span>
+    </nav>
+
+    <section class="fiche">
+
+        <div class="fiche-affiche">
+            <img src="{{ film.affiche }}" alt="{{ film.titre }}">
+        </div>
+
+        <div>
+            <span class="etiquette etiquette-accent">{{ film.genre }}</span>
+            <h1 class="fiche-titre">{{ film.titre }}</h1>
+
+            <div class="fiche-meta">
+                <span>Sortie <strong>{{ film.anneeSortie }}</strong></span>
+                <span>Durée <strong>{{ film.dureeFormatee }}</strong></span>
+                <span class="fiche-realisateur">
+                    Réalisé par <a href="{{ path('app_realisateur', {id: film.realisateur.id}) }}">{{ film.realisateur.nom }}</a>
+                </span>
+            </div>
+
+            {% if film.synopsis %}
+                <p class="fiche-synopsis">{{ film.synopsis }}</p>
+            {% endif %}
+        </div>
+
+    </section>
+
+    <section class="section">
+        <h2 class="section-titre">Prochaines séances</h2>
+
+        {% for jour, seances in seancesParJour %}
+            <div class="jour">
+                <h3 class="jour-titre">{{ jour|format_datetime(pattern: 'EEEE d MMMM', locale: 'fr') }}</h3>
+
+                <div class="liste-seances">
+                    {% for seance in seances %}
+                        <div class="seance">
+                            <div>
+                                <p class="seance-heure">{{ seance.dateHeur|date('H:i') }}</p>
+                                <p class="seance-details">
+                                    {{ seance.salle.nom }} · {{ seance.version }} · {{ seance.prix|number_format(2, ',', ' ') }} €
+                                </p>
+
+                                {% if seance.estComplete() %}
+                                    <span class="places places-complet">Complet</span>
+                                {% else %}
+                                    {% set restantes = seance.placesRestantes %}
+                                    <span class="places {{ restantes <= 10 ? 'places-faible' : 'places-ok' }}">
+                                        {{ restantes }} place{{ restantes > 1 ? 's' }} restante{{ restantes > 1 ? 's' }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            {% if seance.estComplete() %}
+                                <span class="bouton bouton-petit bouton-desactive">Complet</span>
+                            {% else %}
+                                <a href="{{ path('app_reservation', {id: seance.id}) }}" class="bouton bouton-petit">Réserver</a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <p>Aucune séance programmée pour ce film.</p>
+        {% endfor %}
+    </section>
+
+{% endblock %}

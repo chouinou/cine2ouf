@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReservationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 class Reservation
@@ -15,12 +16,17 @@ class Reservation
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Indiquez votre nom.')]
     private ?string $nomClient = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'Indiquez votre email.')]
+    #[Assert\Email(message: 'Cet email n\'est pas valide.')]
     private ?string $emailClient = null;
 
     #[ORM\Column]
+    #[Assert\Positive(message: 'Le nombre de places doit être positif.')]
+    #[Assert\LessThanOrEqual(10, message: 'Vous pouvez réserver 10 places au maximum.')]
     private ?int $nbPlace = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]

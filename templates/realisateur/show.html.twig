@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ realisateur.nom }} — Cine2ouf{% endblock %}
+
+{% block body %}
+
+    <nav class="fil-ariane">
+        <a href="{{ path('app_films') }}">Films</a>
+        <span>›</span>
+        <span class="fil-actuel">{{ realisateur.nom }}</span>
+    </nav>
+
+    <section class="profil">
+        <div class="avatar">{{ realisateur.initiales }}</div>
+        <div>
+            <h1 class="page-titre">{{ realisateur.nom }}</h1>
+            <p class="page-sous-titre">
+                {% if realisateur.nationalite %}Nationalité {{ realisateur.nationalite }} · {% endif %}
+                {{ realisateur.films|length }} film{{ realisateur.films|length > 1 ? 's' }}
+            </p>
+        </div>
+    </section>
+
+    <section class="grille-films">
+        {% for film in realisateur.films %}
+            {{ include('film/_carte.html.twig', {film: film}) }}
+        {% endfor %}
+    </section>
+
+{% endblock %}

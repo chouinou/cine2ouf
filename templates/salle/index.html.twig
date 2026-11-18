@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos salles — Cine2ouf{% endblock %}
+
+{% block body %}
+
+    <section class="page-entete">
+        <h1 class="page-titre">Nos salles</h1>
+        <p class="page-sous-titre">
+            {{ salles|length }} salle{{ salles|length > 1 ? 's' }} · {{ capaciteTotale }} places au total
+        </p>
+    </section>
+
+    <section class="grille-salles">
+        {% for salle in salles %}
+            <article class="carte-salle">
+                <h2 class="carte-salle-nom">{{ salle.nom }}</h2>
+                <span class="etiquette">{{ salle.nombreSeancesAVenir }} séances à venir</span>
+                <p class="carte-salle-capacite">{{ salle.capacite }}</p>
+                <p class="carte-salle-label">places</p>
+            </article>
+        {% endfor %}
+    </section>
+
+{% endblock %}

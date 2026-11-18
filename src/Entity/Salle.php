@@ -90,4 +90,19 @@ class Salle
 
         return $this;
     }
+
+        // Nombre de séances de la salle qui n'ont pas encore commencé
+    public function getNombreSeancesAVenir(): int
+    {
+        $maintenant = new \DateTimeImmutable();
+        $total = 0;
+
+        foreach ($this->seances as $seance) {
+            if ($seance->getDateHeur() >= $maintenant) {
+                $total = $total + 1;
+            }
+        }
+
+        return $total;
+    }
 }

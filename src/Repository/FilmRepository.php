@@ -16,28 +16,18 @@ class FilmRepository extends ServiceEntityRepository
         parent::__construct($registry, Film::class);
     }
 
-//    /**
-//     * @return Film[] Returns an array of Film objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('f')
-//            ->andWhere('f.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('f.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Film
-//    {
-//        return $this->createQueryBuilder('f')
-//            ->andWhere('f.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /** Les films qui ont au moins une séance à venir, avec leur réalisateur */
+    public function findALaffiche(): array
+    {
+        return $this->createQueryBuilder('f')
+            ->join('f.realisateur', 'r')
+            ->addSelect('r')
+            ->join('f.seances', 's')
+            ->where('s.date_heur >= :maintenant')
+            ->setParameter('maintenant', new \DateTimeImmutable())
+            ->distinct()
+            ->orderBy('f.titre', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

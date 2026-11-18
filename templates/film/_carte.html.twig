@@ -1,0 +1,12 @@
+<article class="carte-film">
+    <a href="{{ path('app_film', {id: film.id}) }}" class="carte-film-affiche">
+        <img src="{{ film.affiche }}" alt="{{ film.titre }}">
+    </a>
+    <div class="carte-film-infos">
+        <span class="etiquette etiquette-accent">{{ film.genre }}</span>
+        <h2 class="carte-film-titre">
+            <a href="{{ path('app_film', {id: film.id}) }}">{{ film.titre }}</a>
+        </h2>
+        <p class="carte-film-meta">{{ film.realisateur.nom }} · {{ film.dureeFormatee }}</p>
+    </div>
+</article>

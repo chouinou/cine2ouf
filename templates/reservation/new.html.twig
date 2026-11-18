@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservation — Cine2ouf{% endblock %}
+
+{% block body %}
+
+    {% set film = seance.film %}
+
+    <nav class="fil-ariane">
+        <a href="{{ path('app_films') }}">Films</a>
+        <span>›</span>
+        <a href="{{ path('app_film', {id: film.id}) }}">{{ film.titre }}</a>
+        <span>›</span>
+        <span class="fil-actuel">Réservation</span>
+    </nav>
+
+    <section class="page-entete">
+        <h1 class="page-titre">Réserver vos places</h1>
+        <p class="page-sous-titre">
+            {{ film.titre }} · {{ seance.dateHeur|format_datetime(pattern: "EEEE d MMMM 'à' HH:mm", locale: 'fr') }}
+        </p>
+    </section>
+
+    <section class="reservation">
+
+        {{ form_start(form, {attr: {class: 'formulaire', novalidate: 'novalidate'}}) }}
+
+            <div class="champ">
+                {{ form_label(form.nomClient) }}
+                {{ form_widget(form.nomClient) }}
+                <div class="champ-erreur">{{ form_errors(form.nomClient) }}</div>
+            </div>
+
+            <div class="champ">
+                {{ form_label(form.emailClient) }}
+                {{ form_widget(form.emailClient) }}
+                <div class="champ-erreur">{{ form_errors(form.emailClient) }}</div>
+            </div>
+
+            <div class="champ">
+                {{ form_label(form.nbPlace) }}
+                {{ form_widget(form.nbPlace) }}
+                <p class="champ-aide">Il reste {{ seance.placesRestantes }} places pour cette séance.</p>
+                <div class="champ-erreur">{{ form_errors(form.nbPlace) }}</div>
+            </div>
+
+            <button type="submit" class="bouton">Confirmer la réservation</button>
+
+        {{ form_end(form) }}
+
+        <aside class="recap">
+            <h2 class="recap-titre">Votre séance</h2>
+            <div class="recap-ligne"><span>Film</span><strong>{{ film.titre }}</strong></div>
+            <div class="recap-ligne">
+                <span>Date</span>
+                <strong>{{ seance.dateHeur|format_datetime(pattern: 'EEEE d MMMM', locale: 'fr')|capitalize }}</strong>
+            </div>
+            <div class="recap-ligne"><span>Heure</span><strong>{{ seance.dateHeur|date('H:i') }}</strong></div>
+            <div class="recap-ligne"><span>Salle</span><strong>{{ seance.salle.nom }}</strong></div>
+            <div class="recap-ligne"><span>Version</span><strong>{{ seance.version }}</strong></div>
+            <div class="recap-ligne">
+                <span>Prix par place</span>
+                <strong>{{ seance.prix|number_format(2, ',', ' ') }} €</strong>
+            </div>
+            <div class="recap-ligne"><span>Places restantes</span><strong>{{ seance.placesRestantes }}</strong></div>
+        </aside>
+
+    </section>
+
+{% endblock %}

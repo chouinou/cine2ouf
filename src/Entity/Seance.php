@@ -138,4 +138,27 @@ class Seance
 
         return $this;
     }
+
+        // Somme des places de toutes les réservations de la séance
+    public function getPlacesReservees(): int
+    {
+        $total = 0;
+        foreach ($this->reservations as $reservation) {
+            $total = $total + $reservation->getNbPlace();
+        }
+
+        return $total;
+    }
+
+    // Capacité de la salle moins les places réservées, jamais négatif
+    public function getPlacesRestantes(): int
+    {
+        return max(0, $this->salle->getCapacite() - $this->getPlacesReservees());
+    }
+
+    // Vrai s'il ne reste plus aucune place
+    public function estComplete(): bool
+    {
+        return $this->getPlacesRestantes() === 0;
+    }
 }

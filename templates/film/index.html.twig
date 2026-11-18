@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Films à l'affiche — Cine2ouf{% endblock %}
+
+{% block body %}
+
+    <section class="page-entete">
+        <h1 class="page-titre">À l'affiche</h1>
+        <p class="page-sous-titre">{{ films|length }} film{{ films|length > 1 ? 's' }}</p>
+    </section>
+
+    <section class="grille-films">
+        {% for film in films %}
+            {{ include('film/_carte.html.twig', {film: film}) }}
+        {% else %}
+            <p>Aucun film à l'affiche pour le moment.</p>
+        {% endfor %}
+    </section>
+
+{% endblock %}

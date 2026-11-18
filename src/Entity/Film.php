@@ -167,4 +167,13 @@ class Film
 
         return $this;
     }
+
+        // Transforme une durée en minutes (169) en texte lisible ("2 h 49")
+    public function getDureeFormatee(): string
+    {
+        $heures = intdiv($this->duree, 60);
+        $minutes = $this->duree % 60;
+
+        return $heures . ' h ' . str_pad((string) $minutes, 2, '0', STR_PAD_LEFT);
+    }
 }
