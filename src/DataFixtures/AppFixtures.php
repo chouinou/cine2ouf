@@ -7,12 +7,17 @@ use App\Entity\Realisateur;
 use App\Entity\Reservation;
 use App\Entity\Salle;
 use App\Entity\Seance;
+use App\Entity\Utilisateur;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    public function __construct(private UserPasswordHasherInterface $hasher)
+    {
+    }
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
@@ -131,6 +136,38 @@ class AppFixtures extends Fixture
             }
         }
 
+        // 4 bis. Les utilisateurs
+        // Un administrateur, connu, pour tester l'administration
+        $admin = new Utilisateur();
+        $admin->setPrenom('Admin');
+        $admin->setNom('Cine2ouf');
+        $admin->setEmail('admin@cine2ouf.fr');
+        $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setPassword($this->hasher->hashPassword($admin, 'admin1234'));
+        $manager->persist($admin);
+
+        // Une cliente, connue, pour tester la connexion
+        $camille = new Utilisateur();
+        $camille->setPrenom('Camille');
+        $camille->setNom('Laurent');
+        $camille->setEmail('camille@exemple.fr');
+        $camille->setPassword($this->hasher->hashPassword($camille, 'motdepasse'));
+        $manager->persist($camille);
+
+        $utilisateurs = [$camille];
+
+        // 10 autres clients générés par Faker, tous avec le même mot de passe
+        for ($i = 0; $i < 10; $i++) {
+            $utilisateur = new Utilisateur();
+            $utilisateur->setPrenom($faker->firstName());
+            $utilisateur->setNom($faker->lastName());
+            $utilisateur->setEmail($faker->unique()->safeEmail());
+            $utilisateur->setPassword($this->hasher->hashPassword($utilisateur, 'motdepasse'));
+
+            $manager->persist($utilisateur);
+            $utilisateurs[] = $utilisateur;
+        }
+
         // 7 jours × 4 salles × 3 horaires = 84 séances
 
         // ---------------------------------------------------------------
@@ -151,8 +188,13 @@ class AppFixtures extends Fixture
             }
 
             $reservation = new Reservation();
-            $reservation->setNomClient($faker->name());
-            $reservation->setEmailClient($faker->safeEmail());
+            // Je recupere un utilisateur aleatoire
+            $utilisateur = $faker->randomElement($utilisateurs);
+            // Pour chaque reservation généré, je vais définir un utilisateur pour l'associer à cette reservation
+            $reservation->setUtilisateur($utilisateur);
+            // Je définis le nom et prenom de l'utilisateur qui a reservé
+            $reservation->setNomClient($utilisateur->getPrenom().' '.$utilisateur->getNom());
+            $reservation->setEmailClient($utilisateur->getEmail());
             $reservation->setNbPlace($nbPlaces);
             $reservation->setDateReservation(
                 \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-7 days'))
